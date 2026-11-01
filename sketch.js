@@ -196,13 +196,13 @@ function mouseReleased() {
     else notifMsg = "Yo tambien TE AAAAAMO";
 
     // 3. Enviar notificación push gratis a tu Android vía ntfy
-    fetch('https://ntfy.sh/loveOmeter', {
-      method: 'POST',
-      body: `El nivel está al ${Math.round(currentTemp)}%. ${notifMsg}`,
-      headers: {
-        'Title': '❤️ Termómetro de Amor actualizado',
-        'Tags': 'heart,fire'
-      }
-    });
+      fetch('https://ntfy.sh/loveOmeter', {
+    method: 'POST',
+    body: `El nivel está al ${Math.round(currentTemp)}%. ${notifMsg}`,
+    headers: {
+      'Title': 'Termometro de Amor actualizado',
+      'Tags': 'heart,fire'
+    }
+  });
   }
 }
