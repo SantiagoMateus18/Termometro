@@ -201,7 +201,7 @@ function mouseReleased() {
     body: `El nivel está al ${Math.round(currentTemp)}%. ${notifMsg}`,
     headers: {
       'Title': 'Termometro de Amor actualizado',
-      'Tags': 'heart,fire'
+      'Tags': 'heart'
     }
   });
   }
