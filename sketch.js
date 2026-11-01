@@ -183,6 +183,26 @@ function mouseDragged() {
 function mouseReleased() {
   if (isDragging) {
     isDragging = false;
+    
+    // 1. Guardar en la base de datos para que se sincronice visualmente
     loveRef.set(Math.round(currentTemp));
+
+    // 2. Determinar el mensaje para la notificación
+    let notifMsg = "";
+    if (currentTemp < 15) notifMsg = "Me odias literal";
+    else if (currentTemp < 35) notifMsg = "¿Por qué bajó tanto? ¿qué hice?";
+    else if (currentTemp < 65) notifMsg = "Bueno, me amas";
+    else if (currentTemp < 88) notifMsg = "Más Linda, MUAK";
+    else notifMsg = "Yo tambien TE AAAAAMO";
+
+    // 3. Enviar notificación push gratis a tu Android vía ntfy
+    fetch('https://ntfy.sh/loveOmeter', {
+      method: 'POST',
+      body: `El nivel está al ${Math.round(currentTemp)}%. ${notifMsg}`,
+      headers: {
+        'Title': '❤️ Termómetro de Amor actualizado',
+        'Tags': 'heart,fire'
+      }
+    });
   }
 }
