@@ -17,6 +17,7 @@ const loveRef = database.ref('love_level');
 let currentTemp = 75;   
 let animatedTemp = 75;  
 let isDragging = false;
+let canEdit = false; // Por defecto es solo lectura
 
 // Variables de geometría adaptable
 let cx, bulbY, bulbRadius, tubeWidth, tubeTopY, tubeHeight;
@@ -25,6 +26,13 @@ function setup() {
   let canvas = createCanvas(windowWidth, windowHeight);
   canvas.parent('canvas-container');
   textFont('Fredoka');
+
+  // Verificar si tiene permiso en la URL o guardado en el dispositivo
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('mode') === 'editor' || localStorage.getItem('isLoveEditor') === 'true') {
+    canEdit = true;
+    localStorage.setItem('isLoveEditor', 'true'); // Persiste el permiso en el navegador
+  }
 
   recalculateLayout();
 
@@ -95,7 +103,7 @@ function draw() {
   rect(cx - tubeWidth / 2, tubeTopY, tubeWidth, tubeHeight, 20, 20, 0, 0);
   circle(cx, bulbY, bulbRadius * 2);
 
-  // 2. LLENADO DE MERCURIO UNIFICADO (Sin brecha entre bulbo y barra)
+  // 2. LLENADO DE MERCURIO UNIFICADO
   noStroke();
   fill(currentColor);
 
@@ -167,6 +175,9 @@ function updateTempFromMouse() {
 }
 
 function mousePressed() {
+  // Bloquear interacción si no se tienen permisos
+  if (!canEdit) return;
+
   if (mouseX >= cx - tubeWidth * 2 && mouseX <= cx + tubeWidth * 2 &&
       mouseY >= tubeTopY - 30 && mouseY <= bulbY + bulbRadius + 20) {
     isDragging = true;
@@ -175,19 +186,19 @@ function mousePressed() {
 }
 
 function mouseDragged() {
-  if (isDragging) {
+  if (canEdit && isDragging) {
     updateTempFromMouse();
   }
 }
 
 function mouseReleased() {
-  if (isDragging) {
+  if (canEdit && isDragging) {
     isDragging = false;
     
-    // 1. Guardar en la base de datos para que se sincronice visualmente
+    // 1. Guardar en Firebase
     loveRef.set(Math.round(currentTemp));
 
-    // 2. Determinar el mensaje para la notificación
+    // 2. Determinar el mensaje
     let notifMsg = "";
     if (currentTemp < 15) notifMsg = "Me odias literal";
     else if (currentTemp < 35) notifMsg = "¿Por qué bajó tanto? ¿qué hice?";
@@ -195,14 +206,14 @@ function mouseReleased() {
     else if (currentTemp < 88) notifMsg = "Más Linda, MUAK";
     else notifMsg = "Yo tambien TE AAAAAMO";
 
-    // 3. Enviar notificación push gratis a tu Android vía ntfy
-      fetch('https://ntfy.sh/loveOmeter', {
-    method: 'POST',
-    body: `El nivel está al ${Math.round(currentTemp)}%. ${notifMsg}`,
-    headers: {
-      'Title': 'Termometro de Amor actualizado',
-      'Tags': 'heart'
-    }
-  });
+    // 3. Enviar notificación Push vía ntfy
+    fetch('https://ntfy.sh/loveOmeter', {
+      method: 'POST',
+      body: `El nivel está al ${Math.round(currentTemp)}%. ${notifMsg}`,
+      headers: {
+        'Title': 'Termometro de Amor actualizado',
+        'Tags': 'heart'
+      }
+    });
   }
 }
