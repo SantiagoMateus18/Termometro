@@ -4,22 +4,19 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta charset="UTF-8">
-  <!-- viewport-fit=cover expande la app detrás del notch de los celulares -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <!-- Pinta la barra de estado del celular del color de tu fondo -->
   <meta name="theme-color" content="#0f0c20">
   <title>Love-O-Meter</title>
   
-  <!-- Forzamos el fondo desde aquí para saltarnos cualquier problema de caché del CSS -->
   <style>
     html, body {
-      background-color: #0f0c20 !important; /* El mismo fondo oscuro */
+      background-color: #0f0c20 !important;
       margin: 0;
       padding: 0;
       width: 100vw;
       height: 100vh;
       overflow: hidden;
-      overscroll-behavior: none; /* Elimina el espacio blanco al arrastrar (efecto rebote) */
+      overscroll-behavior: none;
       touch-action: none;
     }
     
@@ -36,7 +33,6 @@
     }
   </style>
 
-  <!-- Fuentes y dependencias -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&display=swap" rel="stylesheet">
@@ -50,7 +46,6 @@
 
   <div id="canvas-container"></div>
 
-  <!-- El ?v=3 obliga a tu celular a descargar la versión más reciente del script -->
-  <script src="sketch.js?v=5"></script>
+  <script src="sketch.js?v=6"></script>
 </body>
 </html>
