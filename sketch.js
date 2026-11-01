@@ -44,15 +44,14 @@ function windowResized() {
 function recalculateLayout() {
   cx = width / 2;
   
-  // Adaptabilidad según pantalla móvil o escritorio
-  let maxH = min(height * 0.75, 550);
+  let maxH = min(height * 0.7, 520);
   let baseUnit = min(width, height);
   
-  tubeWidth = constrain(baseUnit * 0.1, 32, 48);
+  tubeWidth = constrain(baseUnit * 0.1, 32, 46);
   bulbRadius = tubeWidth * 1.15;
   
-  tubeTopY = (height - maxH) / 2 + 50;
-  bulbY = tubeTopY + maxH - bulbRadius - 20;
+  tubeTopY = (height - maxH) / 2 + 30;
+  bulbY = tubeTopY + maxH - bulbRadius;
   tubeHeight = bulbY - tubeTopY;
 }
 
@@ -69,11 +68,11 @@ function draw() {
   let hotColor  = color(231, 76, 60);
   let currentColor = lerpColor(coldColor, hotColor, animatedTemp / 100);
 
-  let fillHeight = map(animatedTemp, 0, 100, 0, tubeHeight - 12);
+  let fillHeight = map(animatedTemp, 0, 100, 0, tubeHeight - 10);
   let handleY = bulbY - fillHeight;
 
   // -------------------------------------------------------------
-  // SOMBRA ESTILO CÓMIC (Desplazada e impresa primero)
+  // SOMBRA ESTILO CÓMIC (Fondo proyectado)
   // -------------------------------------------------------------
   let shadowOffset = 6;
   push();
@@ -81,51 +80,54 @@ function draw() {
   fill(0, 0, 0, 180);
   noStroke();
 
-  // Sombra del cuerpo del tubo y bulbo
   rect(cx - tubeWidth / 2, tubeTopY, tubeWidth, tubeHeight, 24, 24, 0, 0);
   circle(cx, bulbY, bulbRadius * 2);
-  circle(cx, handleY, 22);
   pop();
 
   // -------------------------------------------------------------
-  // DIBUJO PRINCIPAL CON DILINEADO CÓMIC (Stroke negro marcado)
+  // ESTRUCTURA PRINCIPAL DEL TERMÓMETRO (Delineado Negro)
   // -------------------------------------------------------------
   stroke(10, 8, 20);
   strokeWeight(3.5);
 
-  // 1. Fondo Tubo
+  // 1. Tubo Fondo y Bulbo Exterior
   fill(28, 22, 48);
   rect(cx - tubeWidth / 2, tubeTopY, tubeWidth, tubeHeight, 20, 20, 0, 0);
+  circle(cx, bulbY, bulbRadius * 2);
 
-  // 2. Bulbo y Mercurio
+  // 2. LLENADO DE MERCURIO UNIFICADO (Sin brecha entre bulbo y barra)
+  noStroke();
   fill(currentColor);
 
   let pulse = (animatedTemp > 60) ? sin(frameCount * 0.1) * (animatedTemp / 22) : 0;
-  circle(cx, bulbY, (bulbRadius - 2 + pulse) * 2);
+  
+  // Bulbo relleno
+  circle(cx, bulbY, (bulbRadius - 3 + pulse) * 2);
 
-  // Columna de mercurio
+  // Barra de mercurio conectada directamente desde la base del bulbo
   rect(
     cx - (tubeWidth - 8) / 2, 
-    bulbY - fillHeight, 
+    handleY, 
     tubeWidth - 8, 
-    fillHeight + 10,
-    8, 8, 0, 0
+    bulbY - handleY + (bulbRadius / 2), 
+    6, 6, 0, 0
   );
 
-  // 3. Indicador de arrastre / Punta táctil
+  // 3. INDICADOR TÁCTIL (Manija/Punta en el nivel)
   stroke(10, 8, 20);
   strokeWeight(3);
   fill(currentColor);
   circle(cx, handleY, 20);
+  
   fill(255, 255, 255, 200);
   noStroke();
-  circle(cx - 3, handleY - 3, 5); // Brillo pequeño estilo cómic
+  circle(cx - 3, handleY - 3, 5); // Brillo estilizado
 
-  // 4. Marcas de graduación estilo cómic
-  stroke(255, 255, 255, 80);
+  // 4. MARCAS DE GRADUACIÓN
+  stroke(255, 255, 255, 70);
   strokeWeight(2.5);
   for (let i = 0; i <= 5; i++) {
-    let yMark = map(i, 0, 5, bulbY - 20, tubeTopY + 20);
+    let yMark = map(i, 0, 5, bulbY - 15, tubeTopY + 15);
     line(cx + tubeWidth / 2 + 6, yMark, cx + tubeWidth / 2 + 16, yMark);
   }
 
@@ -133,7 +135,7 @@ function draw() {
   noStroke();
   textAlign(CENTER, CENTER);
 
-  // Porcentaje arriba (con sombra negra de texto cómic)
+  // Porcentaje arriba
   fill(10, 8, 20);
   textSize(min(width * 0.1, 44));
   textStyle(BOLD);
@@ -142,12 +144,11 @@ function draw() {
   fill(255);
   text(floor(animatedTemp) + "%", cx, tubeTopY - 45);
 
-  // Mensaje inferior
+  // Mensaje inferior personalizado
   textSize(min(width * 0.045, 18));
   textStyle(NORMAL);
   fill(currentColor);
 
-  // Aquí modificas o agregas tus mensajes personalizados
   let msg = "";
   if (animatedTemp < 15) msg = "Me odias literal";
   else if (animatedTemp < 35) msg = "¿Por qué bajó tanto? ¿qué hice?";
@@ -155,7 +156,7 @@ function draw() {
   else if (animatedTemp < 88) msg = "Más Linda, MUAK";
   else msg = "Yo tambien TE AAAAAMO";
 
-  text(msg, cx, bulbY + bulbRadius + 35);
+  text(msg, cx, bulbY + bulbRadius + 40);
 }
 
 // --- INTERACCIÓN TÁCTIL Y DE RATÓN ---
