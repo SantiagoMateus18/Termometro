@@ -2,20 +2,45 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <!-- viewport-fit=cover expande la app detrás del notch de los celulares -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <!-- Pinta la barra de estado del celular del color de tu fondo -->
+  <meta name="theme-color" content="#0f0c20">
   <title>Love-O-Meter</title>
   
-  <!-- Fuente Google Font: Fredoka -->
+  <!-- Forzamos el fondo desde aquí para saltarnos cualquier problema de caché del CSS -->
+  <style>
+    html, body {
+      background-color: #0f0c20 !important; /* El mismo fondo oscuro */
+      margin: 0;
+      padding: 0;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      overscroll-behavior: none; /* Elimina el espacio blanco al arrastrar (efecto rebote) */
+      touch-action: none;
+    }
+    
+    #canvas-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      height: 100%;
+    }
+    
+    canvas {
+      display: block;
+    }
+  </style>
+
+  <!-- Fuentes y dependencias -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&display=swap" rel="stylesheet">
-  
   <link rel="stylesheet" href="styles.css">
   
-  <!-- p5.js -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
-  
-  <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
 </head>
@@ -23,6 +48,7 @@
 
   <div id="canvas-container"></div>
 
-  <script src="sketch.js"></script>
+  <!-- El ?v=3 obliga a tu celular a descargar la versión más reciente del script -->
+  <script src="sketch.js?v=3"></script>
 </body>
 </html>
