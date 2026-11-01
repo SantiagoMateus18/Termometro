@@ -1,30 +1,32 @@
 // --- CONFIGURACIÓN DE FIREBASE ---
 const firebaseConfig = {
-  // Pega aquí tus credenciales de la consola de Firebase
-  apiKey: "TU_API_KEY",
-  authDomain: "TU_PROJECT.firebaseapp.com",
-  databaseURL: "https://TU_PROJECT-default-rtdb.firebaseio.com",
-  projectId: "TU_PROJECT",
-  storageBucket: "TU_PROJECT.appspot.com",
-  messagingSenderId: "TU_SENDER_ID",
-  appId: "TU_APP_ID"
+  apiKey: "AIzaSyDbqsssMbqTXPVLPJH2as4YEZzRmtF0IwM",
+  authDomain: "loveometer.firebaseapp.com",
+  databaseURL: "https://loveometer-default-rtdb.firebaseio.com",
+  projectId: "loveometer",
+  storageBucket: "loveometer.firebasestorage.app",
+  messagingSenderId: "41744562668",
+  appId: "1:41744562668:web:02d5bd3e5675660f9228c9",
+  measurementId: "G-5FT1KBX06X"
 };
 
-// Inicializar Firebase
+// Inicializar Firebase y la Base de Datos
 firebase.initializeApp(firebaseConfig);
 const database = firebase.database();
 const loveRef = database.ref('love_level');
 
-let currentTemp = 75;   // Valor objetivo
-let animatedTemp = 75;  // Valor suavizado
+let currentTemp = 75;   // Valor objetivo de temperatura (0 a 100)
+let animatedTemp = 75;  // Valor suavizado para la animación
 let isDragging = false;
 
+// Variables de posición del termómetro
 let cx, bulbY, bulbRadius, tubeWidth, tubeTopY, tubeHeight;
 
 function setup() {
   let canvas = createCanvas(340, 480);
   canvas.parent('canvas-container');
 
+  // Geometría del termómetro
   cx = width / 2;
   bulbY = height - 100;
   bulbRadius = 38;
@@ -44,29 +46,34 @@ function setup() {
 function draw() {
   background(18, 14, 36);
 
+  // Si el usuario está arrastrando el mercurio, actualizar valor local
   if (isDragging) {
     updateTempFromMouse();
   }
 
+  // Animación fluida de transición del nivel
   animatedTemp = lerp(animatedTemp, currentTemp, 0.1);
 
+  // Cambio dinámico de color (Azul a Rojo)
   let coldColor = color(41, 128, 185);
   let hotColor  = color(231, 76, 60);
   let currentColor = lerpColor(coldColor, hotColor, animatedTemp / 100);
 
-  // 1. TUBO PRINCIPAL
+  // 1. TUBO PRINCIPAL (Fondo)
   stroke(50, 40, 80);
   strokeWeight(4);
   fill(30, 24, 50);
   rect(cx - tubeWidth / 2, tubeTopY, tubeWidth, tubeHeight, 20, 20, 0, 0);
 
-  // 2. MERCURIO
+  // 2. MERCURIO Y LLENADO
   noStroke();
   fill(currentColor);
 
+  // Pulso de corazón/latido en el bulbo
   let pulse = (animatedTemp > 60) ? sin(frameCount * 0.1) * (animatedTemp / 20) : 0;
   circle(cx, bulbY, (bulbRadius - 3 + pulse) * 2);
 
+  // Columna de líquido
   let fillHeight = map(animatedTemp, 0, 100, 0, tubeHeight - 12);
   rect(
     cx - (tubeWidth - 8) / 2, 
@@ -83,7 +90,7 @@ function draw() {
   let handleY = bulbY - fillHeight;
   circle(cx, handleY, 20);
 
-  // 4. MARCAS
+  // 4. MARCAS DEL TERMÓMETRO
   stroke(255, 255, 255, 50);
   strokeWeight(2);
   for (let i = 0; i <= 5; i++) {
@@ -95,11 +102,13 @@ function draw() {
   noStroke();
   textAlign(CENTER, CENTER);
 
+  // Porcentaje arriba
   fill(255);
   textSize(38);
   textStyle(BOLD);
   text(floor(animatedTemp) + "%", cx, 45);
 
+  // Mensaje variable
   textSize(15);
   textStyle(NORMAL);
   fill(currentColor);
@@ -113,6 +122,8 @@ function draw() {
 
   text(msg, cx, bulbY + bulbRadius + 30);
 }
+
+// --- CONTROLES DE INTERACCIÓN Y SINCRONIZACIÓN ---
 
 function updateTempFromMouse() {
   let clampedY = constrain(mouseY, tubeTopY, bulbY);
@@ -136,7 +147,7 @@ function mouseDragged() {
 function mouseReleased() {
   if (isDragging) {
     isDragging = false;
-    // Guardar el valor final en Firebase al soltar
+    // Envía la nueva temperatura a Firebase al soltar el slider
     loveRef.set(Math.round(currentTemp));
   }
 }
